@@ -38,6 +38,7 @@ def fetchStreams(game_name):
     resp = urllib2.urlopen(req)
     return resp.read()
 
+
 def parseStreams(raw_content):
     streams = []
     streams_root = json.loads(raw_content)
@@ -47,4 +48,3 @@ def parseStreams(raw_content):
 
 if __name__ == '__main__':
     app.run('0.0.0.0')
-
