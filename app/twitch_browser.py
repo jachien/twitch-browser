@@ -46,6 +46,5 @@ def parseStreams(raw_content):
     return streams
 
 if __name__ == '__main__':
-    #print json.dumps(json.loads(fetchStreams('dota 2')), indent=4)
-    app.run('0.0.0.0', debug=True)
+    app.run('0.0.0.0')
 
