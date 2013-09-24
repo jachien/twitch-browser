@@ -15,8 +15,11 @@
             float: left;
             margin: 10px;
         }
-        .stream_item p {
+        .stream_item div {
             margin: 2px;
+        }
+        .stream_status {
+            height: 20px;
         }
     </style>
 </head>
@@ -25,10 +28,10 @@
     <div class="stream_container"/>
     {% for stream in streams %}
         <div class="stream_item">
-            <p><a href="{{ stream.getUrl() }}"><img src="{{ stream.getPreviewUrl() }}" /></a></p>
-            <p>{{ stream.getStatus() }}</p>
-            <p><strong>{{ stream.getUserDisplayName() }}</strong> playing <strong>{{ stream.getGameName() }}</strong></p>
-            <p>{{ stream.getViewerCount() }} viewers</p>
+            <div><a href="{{ stream.getUrl() }}"><img src="{{ stream.getPreviewUrl() }}" /></a></div>
+            <div class="stream_status">{{ stream.getStatus() }}</div>
+            <div><strong>{{ stream.getUserDisplayName() }}</strong> playing <strong>{{ stream.getGameName() }}</strong></div>
+            <div>{{ stream.getViewerCount() }} viewers</div>
         </div>
     {% endfor %}
     </div>
