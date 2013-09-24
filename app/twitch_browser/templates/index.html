@@ -2,19 +2,35 @@
 <head>
     <title>Twitch Browser</title>
     <style>
-        .stream_item { margin-bottom: 20px }
-        .stream_item p { margin: 2px }
+        body {
+            font: 12px Helvetica,Arial,sans-serif;
+
+        }
+        .stream_container {
+            width: 100%;
+            overflow: hidden;
+        }
+        .stream_item {
+            width: 320px;
+            float: left;
+            margin: 10px;
+        }
+        .stream_item p {
+            margin: 2px;
+        }
     </style>
 </head>
 <body>
-    <h1>Live Twitch.tv Streams</h1>
+    <h1>Live twitch streams</h1>
+    <div class="stream_container"/>
     {% for stream in streams %}
-    <div class="stream_item">
-        <p><a href="{{ stream.getUrl() }}"><img src="{{ stream.getPreviewUrl() }}" /></a></p>
-        <p>{{ stream.getStatus() }}</p>
-        <p><strong>{{ stream.getUserDisplayName() }}</strong> playing <strong>{{ stream.getGameName() }}</strong></p>
-        <p>{{ stream.getViewerCount() }} viewers</p>
-    </div>
+        <div class="stream_item">
+            <p><a href="{{ stream.getUrl() }}"><img src="{{ stream.getPreviewUrl() }}" /></a></p>
+            <p>{{ stream.getStatus() }}</p>
+            <p><strong>{{ stream.getUserDisplayName() }}</strong> playing <strong>{{ stream.getGameName() }}</strong></p>
+            <p>{{ stream.getViewerCount() }} viewers</p>
+        </div>
     {% endfor %}
+    </div>
 </body>
 </html>
