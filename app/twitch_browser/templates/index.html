@@ -4,32 +4,25 @@
     <style>
         body {
             font: 12px Helvetica,Arial,sans-serif;
-
-        }
-        .stream_container {
-            width: 100%;
-            overflow: hidden;
         }
         .stream_item {
             width: 320px;
-            float: left;
+            display: inline-block;
             margin: 10px;
+            vertical-align: top;
         }
         .stream_item div {
             margin: 2px;
-        }
-        .stream_status {
-            height: 28px;
         }
     </style>
 </head>
 <body>
     <h1>Live twitch streams</h1>
-    <div class="stream_container"/>
+    <div>
     {% for stream in streams %}
         <div class="stream_item">
             <div><a href="{{ stream.getUrl() }}"><img src="{{ stream.getPreviewUrl() }}" /></a></div>
-            <div class="stream_status">{{ stream.getStatus() }}</div>
+            <div>{{ stream.getStatus() }}</div>
             <div><strong>{{ stream.getUserDisplayName() }}</strong> playing <strong>{{ stream.getGameName() }}</strong></div>
             <div>{{ stream.getViewerCount() }} viewers</div>
         </div>
