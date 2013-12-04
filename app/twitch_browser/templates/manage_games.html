@@ -1,15 +1,31 @@
 <html>
 <head>
-    <title>Select Games - Twitch Browser</title>
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-    <script>
-        $(function() {
-            function log( message ) {
-                $( "<div>" ).text( message ).prependTo( "#log" );
-                $( "#log" ).scrollTop( 0 );
-            }
+    <title>Manage Games - Twitch Browser</title>
+    <script src="/static/js/jquery-1.9.1.js"></script>
+    <script src="/static/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <link rel="stylesheet" href="/static/css/smoothness/jquery-ui-1.10.3.custom.min.css"/>
 
+    <style>
+        body {
+            font: 12px Helvetica,Arial,sans-serif;
+            background-color: #dddddd;
+        }
+        .ui-autocomplete-loading {
+            background: white url('/static/css/smoothness/images/ui-anim_basic_16x16.gif') right center no-repeat;
+        }
+        #game { width: 25em; }
+        #games td {
+            padding: 2px 16px 2px 16px;
+        }
+    </style>
+
+    <!-- autocomplete js modified from http://jqueryui.com/autocomplete/#remote-jsonp -->
+    <script>
+        $( document ).ready(function() {
+            renderGames();
+        });
+
+        $(function() {
             $( "#game" ).autocomplete({
                 source: function( request, response ) {
                     $.ajax({
@@ -20,7 +36,16 @@
                             type: "suggest"
                         },
                         success: function( data ) {
-                            response( $.map( data.games, function( item ) {
+                            var games = data.games;
+                            games.sort(function(a, b) {
+                                if (a["popularity"] < b["popularity"]) {
+                                    return 1;
+                                } else if (a["popularity"] > b["popularity"]) {
+                                    return -1;
+                                }
+                                return 0;
+                            });
+                            response($.map(games, function( item ) {
                                 return {
                                     label: item.name,
                                     value: item.name
@@ -32,9 +57,8 @@
                 minLength: 1,
                 delay: 200,
                 select: function( event, ui ) {
-                    log( ui.item ?
-                            "Selected: " + ui.item.label :
-                            "Nothing selected, input was " + this.value);
+                    addGame(ui.item.label);
+                    renderGames();
                 },
                 open: function() {
                     $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
@@ -44,17 +68,90 @@
                 }
             });
         });
+
+        function writeGamesCookie(games) {
+            var new_encoded_games = encodeGames(games);
+            document.cookie = "games=" + new_encoded_games + "; path=/";
+        }
+
+        function addGame(game) {
+            var games = readGamesCookie();
+            var found = false;
+            for (var i=0; i < games.length; i++) {
+                if (games[i] == game) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                games.push(game);
+                writeGamesCookie(games);
+            }
+        }
+
+        function removeGame(game) {
+            var games = readGamesCookie();
+            for (var i=0; i < games.length; i++) {
+                if (games[i] == game) {
+                    games.splice(i, 1);
+                    break;
+                }
+            }
+            writeGamesCookie(games);
+        }
+
+        function readGamesCookie() {
+            var encoded_games = readEncodedGames();
+            return decodeGames(encoded_games);
+        }
+
+        function readEncodedGames() {
+            var nameEQ = "games=";
+            var ca = document.cookie.split(';');
+            for(var i=0;i < ca.length;i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+            }
+            return "";
+        }
+
+        function decodeGames(cookieValue) {
+            var games = cookieValue.split(':');
+            return $.map(games, function(game) {
+                return decodeURIComponent(game);
+            });
+        }
+
+        function encodeGames(games) {
+            games.sort(function(a, b) {
+                return a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase());
+            });
+            var encoded_game_array = $.map(games, function(game) {
+                return encodeURIComponent(game);
+            });
+            return encoded_game_array.join(":");
+        }
+
+        function renderGames() {
+            var encoded_games = readEncodedGames();
+            var games = decodeGames(encoded_games);
+            $("#games").empty().append("<table>");
+            for (var i=0; i < games.length; i++) {
+                $("#games").append('<tr><td>' + games[i] + '</td><td><a href="#" onclick="removeGame(\'' + games[i] + '\'); renderGames();">remove</a></td></tr>');
+            }
+            $("#games").append("</table>");
+        }
     </script>
 </head>
 <body>
-<div class="ui-widget">
-    <label for="game">Game name: </label>
+<div><a href="/">Browse Live Streams</a></div>
+<div>
+    <label for="game">Add Game: </label>
     <input id="game">
 </div>
-
-<div class="ui-widget" style="margin-top:2em; font-family:Arial">
-    Result:
-    <div id="log" style="height: 200px; width: 300px; overflow: auto;" class="ui-widget-content"></div>
+<div id="games_container">
+    <h2>My Games</h2>
+    <div id="games"></div>
 </div>
 </body>
 </html>

@@ -12,8 +12,8 @@ from twitch_browser import twitch_stream
 @app.route('/')
 def index():
     games = getGames()
-    streams = getCombinedStreams(games)
-    return render_template("index.html", streams=streams)
+    streams, api_time = getCombinedStreams(games)
+    return render_template("index.html", streams=streams, api_time=api_time, num_games=len(games))
 
 
 def getGames():
@@ -26,10 +26,12 @@ def getGames():
 
 def getCombinedStreams(game_names):
     streams = []
+    total_api_time = 0;
     for game_name in game_names:
-        raw_content = fetchStreams(game_name)
+        raw_content, api_time = fetchStreams(game_name)
         streams += parseStreams(raw_content)
-    return sorted(streams, key=lambda stream: stream.getViewerCount(), reverse=True)
+        total_api_time += api_time
+    return sorted(streams, key=lambda stream: stream.getViewerCount(), reverse=True), total_api_time
 
 
 def fetchStreams(game):
@@ -50,7 +52,7 @@ def fetchStreams(game):
     content = resp.read()
     tot_time = time.time() - start
     app.logger.info('took %f secs to retrieve %s @ %s' % (tot_time, game, url))
-    return content
+    return content, tot_time
 
 
 def parseStreams(raw_content):
@@ -59,6 +61,11 @@ def parseStreams(raw_content):
     for stream in streams_root['streams']:
         streams.append(twitch_stream.TwitchStream(stream))
     return streams
+
+
+@app.route('/manage-games')
+def manageGames():
+    return render_template("manage_games.html")
 
 
 @app.errorhandler(500)

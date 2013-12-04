@@ -19,6 +19,7 @@
 </head>
 <body>
     <h1>Live twitch streams</h1>
+    <div><a href="/manage-games">Manage Games</a></div>
     <div>
     {% for stream in streams %}
         <div class="stream_item">
@@ -29,5 +30,6 @@
         </div>
     {% endfor %}
     </div>
+    <div>Took {{ api_time }} seconds to make {{ num_games }} queries to twitch api.</div>
 </body>
 </html>
