@@ -18,7 +18,7 @@
     </style>
 </head>
 <body>
-    <h1>Live twitch streams</h1>
+    <h1>Live Twitch Streams</h1>
     <div><a href="/manage-games">Manage Games</a></div>
     <div>
     {% for stream in streams %}
@@ -28,8 +28,13 @@
             <div><strong>{{ stream.getUserDisplayName() }}</strong> playing <strong>{{ stream.getGameName() }}</strong></div>
             <div>{{ stream.getViewerCount() }} viewers</div>
         </div>
+    {% else %}
+        <div style="margin-top: 10px;">You have no games saved. <a href="/manage-games">Add some</a> then return here!</div>
     {% endfor %}
     </div>
-    <div>Took {{ api_time }} seconds to make {{ num_games }} queries to twitch api.</div>
+
+    {% if streams %}
+    <div style="margin-bottom: 24px;">Took {{ api_time }} seconds to make {{ num_games }} queries to twitch api.</div>
+    {% endif %}
 </body>
 </html>

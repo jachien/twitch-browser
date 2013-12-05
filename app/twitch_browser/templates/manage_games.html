@@ -112,10 +112,16 @@
                 while (c.charAt(0)==' ') c = c.substring(1,c.length);
                 if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
             }
-            return "";
+
+            var hardcoded_games = ["Dota 2", "StarCraft II: Heart of the Swarm", "Dark Souls"];
+            writeGamesCookie(hardcoded_games);
+            return encodeGames(hardcoded_games);
         }
 
         function decodeGames(cookieValue) {
+            if (cookieValue.length == 0) {
+                return [];
+            }
             var games = cookieValue.split(':');
             return $.map(games, function(game) {
                 return decodeURIComponent(game);
@@ -136,15 +142,20 @@
             var encoded_games = readEncodedGames();
             var games = decodeGames(encoded_games);
             $("#games").empty().append("<table>");
-            for (var i=0; i < games.length; i++) {
-                $("#games").append('<tr><td>' + games[i] + '</td><td><a href="#" onclick="removeGame(\'' + games[i] + '\'); renderGames();">remove</a></td></tr>');
+            if (games.length > 0) {
+                for (var i=0; i < games.length; i++) {
+                    $("#games").append('<tr><td>' + games[i] + '</td><td><a href="#" onclick="removeGame(\'' + games[i] + '\'); renderGames();">remove</a></td></tr>');
+                }
+            } else {
+                $("#games").append("<tr><td>You don't have any games saved. Add some using the input box at the top!</td></tr>");
             }
+
             $("#games").append("</table>");
         }
     </script>
 </head>
 <body>
-<div><a href="/">Browse Live Streams</a></div>
+<div style="margin-bottom: 10px;"><a href="/">Browse Live Streams</a></div>
 <div>
     <label for="game">Add Game: </label>
     <input id="game">

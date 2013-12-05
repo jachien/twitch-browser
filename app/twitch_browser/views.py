@@ -20,6 +20,8 @@ def getGames():
     games_cookie = request.cookies.get('games')
     if games_cookie is None:
         return ['Dota 2', 'StarCraft II: Heart of the Swarm', 'Dark Souls']
+    elif games_cookie == "":
+        return []
     encoded_games = games_cookie.split(':')
     return [urllib.unquote(encoded_game).decode('utf8') for encoded_game in encoded_games]
 
