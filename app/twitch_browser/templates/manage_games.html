@@ -66,7 +66,7 @@
 
         function writeGamesCookie(games) {
             var new_encoded_games = encodeGames(games);
-            document.cookie = "games=" + new_encoded_games + "; path=/";
+            document.cookie = "games=" + new_encoded_games + "; max-age=2147483647; path=/";
         }
 
         function addGame(game) {
